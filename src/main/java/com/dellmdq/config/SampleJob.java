@@ -5,12 +5,17 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.dellmdq.listener.FirstJobListener;
+import com.dellmdq.listener.FirstStepListener;
+import com.dellmdq.service.SecondTasklet;
 
 @Configuration
 public class SampleJob {
@@ -20,15 +25,36 @@ public class SampleJob {
 
 	@Autowired
 	private StepBuilderFactory stepBuilderFactory;
+	
+	@Autowired
+	private SecondTasklet secondTasklet;
+	
+	@Autowired
+	private FirstJobListener firstJobListener;
+	
+	@Autowired
+	private FirstStepListener firstStepListener;
 
+	/**
+	 * Job -> Steps -> tasklet
+	 */
+	
 	@Bean
 	public Job firstJob() {
-		return jobBuilderFactory.get("First Job").start(firstStep()).build();
+		return jobBuilderFactory.get("First Job")
+				.incrementer(new RunIdIncrementer())
+				.start(firstStep())
+				.next(secondStep())
+				.listener(firstJobListener)
+				.build();
 
 	}
 
 	private Step firstStep() {
-		return stepBuilderFactory.get("First Step").tasklet(firstTask()).build();
+		return stepBuilderFactory.get("First Step")
+				.tasklet(firstTask())
+				.listener(firstStepListener)
+				.build();
 
 	}
 
@@ -38,10 +64,33 @@ public class SampleJob {
 			@Override
 			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 				System.out.println("This is first tasklet step.");
+				System.out.println("Step Execution Context" + 
+						chunkContext.getStepContext().getStepExecutionContext());
 				return RepeatStatus.FINISHED;
 			}
 		};
 
 	}
+	//first step config end
+	
+	//second step config start
+	private Step secondStep() {
+		return stepBuilderFactory.get("Second Step").tasklet(secondTasklet).build();
 
+	}
+	
+//	private Tasklet secondTask() {
+//		return new Tasklet() {
+//			@Override
+//			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+//				System.out.println("This is second tasklet step.");
+//				return RepeatStatus.FINISHED;
+//			}
+//		};
+//
+//	}
+	
+	
+
+	//second step config end
 }
