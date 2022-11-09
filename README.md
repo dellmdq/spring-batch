@@ -2,6 +2,8 @@
 Spring Batch Udemy Course: Batch Processing with Spring Batch & Spring Boot
 https://www.udemy.com/course/data-batch-processing-with-spring-batch-spring-boot-spring-framework/
 
+Item branch pushed has different item readers code.
+
 **14. What is Job Instance, Job Execution & Job Execution Context?**
 https://www.udemy.com/course/data-batch-processing-with-spring-batch-spring-boot-spring-framework/learn/lecture/29563416#overview
 
