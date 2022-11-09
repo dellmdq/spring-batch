@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.dellmdq.listener.FirstJobListener;
-import com.dellmdq.listener.FirstStepListener;
 import com.dellmdq.processor.FirstItemProcessor;
 import com.dellmdq.reader.FirstItemReader;
-import com.dellmdq.service.SecondTasklet;
 import com.dellmdq.writer.FirstItemWriter;
+
 
 @Configuration
 public class SampleJob {
@@ -29,14 +27,14 @@ public class SampleJob {
 	@Autowired
 	private StepBuilderFactory stepBuilderFactory;
 	
-	@Autowired
-	private SecondTasklet secondTasklet;
-	
-	@Autowired
-	private FirstJobListener firstJobListener;
-	
-	@Autowired
-	private FirstStepListener firstStepListener;
+//	@Autowired
+//	private SecondTasklet secondTasklet;
+//	
+//	@Autowired
+//	private FirstJobListener firstJobListener;
+//	
+//	@Autowired
+//	private FirstStepListener firstStepListener;
 	
 	@Autowired
 	private FirstItemReader firstItemReader;
@@ -59,7 +57,6 @@ public class SampleJob {
 				.next(secondStep())
 				.listener(firstJobListener)
 				.build();
-
 	}
 
 	private Step firstStep() {
@@ -67,7 +64,6 @@ public class SampleJob {
 				.tasklet(firstTask())
 				.listener(firstStepListener)
 				.build();
-
 	}
 
 	private Tasklet firstTask() {
@@ -89,7 +85,6 @@ public class SampleJob {
 	private Step secondStep() {
 		return stepBuilderFactory.get("Second Step")
 				.tasklet(secondTasklet).build();
-
 	}
 	
 //	private Tasklet secondTask() {
@@ -114,7 +109,14 @@ public class SampleJob {
 				.start(firstChunkStep())//chunk step
 				.next(secondStep())//tasklet step
 				.build();
-
+	}
+	
+	@Bean
+	private Job chunkJob() {
+		return jobBuilderFactory.get("Chunk Job")
+				.incrementer(new RunIdIncrementer())
+				.start(firstChunkStep())
+				.build();
 	}
 	
 	private Step firstChunkStep() {

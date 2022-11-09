@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableBatchProcessing
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 	"com.dellmdq.reader", "com.dellmdq.processor", "com.dellmdq.writer",
 	"com.dellmdq.controller"})//de estos paquetes leeran los jobs y steps
 @EnableAsync
+//@EnableScheduling//permite agendar runs
 public class SpringBatchApplication {
 
 	public static void main(String[] args) {
