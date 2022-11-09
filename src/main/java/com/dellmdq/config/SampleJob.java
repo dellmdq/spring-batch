@@ -15,7 +15,10 @@ import org.springframework.context.annotation.Configuration;
 
 import com.dellmdq.listener.FirstJobListener;
 import com.dellmdq.listener.FirstStepListener;
+import com.dellmdq.processor.FirstItemProcessor;
+import com.dellmdq.reader.FirstItemReader;
 import com.dellmdq.service.SecondTasklet;
+import com.dellmdq.writer.FirstItemWriter;
 
 @Configuration
 public class SampleJob {
@@ -34,6 +37,15 @@ public class SampleJob {
 	
 	@Autowired
 	private FirstStepListener firstStepListener;
+	
+	@Autowired
+	private FirstItemReader firstItemReader;
+	
+	@Autowired
+	private FirstItemProcessor firstItemProcessor;
+	
+	@Autowired
+	private FirstItemWriter firstItemWriter;
 
 	/**
 	 * Job -> Steps -> tasklet
@@ -75,7 +87,8 @@ public class SampleJob {
 	
 	//second step config start
 	private Step secondStep() {
-		return stepBuilderFactory.get("Second Step").tasklet(secondTasklet).build();
+		return stepBuilderFactory.get("Second Step")
+				.tasklet(secondTasklet).build();
 
 	}
 	
@@ -90,7 +103,26 @@ public class SampleJob {
 //
 //	}
 	
-	
-
 	//second step config end
+
+	//====================== Chunck Oriented Step config
+	
+	@Bean
+	public Job secondJob() {
+		return jobBuilderFactory.get("Second Job")//job name
+				.incrementer(new RunIdIncrementer())
+				.start(firstChunkStep())//chunk step
+				.next(secondStep())//tasklet step
+				.build();
+
+	}
+	
+	private Step firstChunkStep() {
+		return stepBuilderFactory.get("First Chunk Step")//step name
+				.<Integer,Long>chunk(3)//tamaño del lote a procesar cada vez a través del flujo item reader, processor, writer.
+				.reader(firstItemReader)
+				.processor(firstItemProcessor)//es posible no usar processor, es opcional
+				.writer(firstItemWriter)
+				.build();
+	}
 }

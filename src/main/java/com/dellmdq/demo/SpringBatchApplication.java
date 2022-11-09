@@ -4,10 +4,14 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableBatchProcessing
-@ComponentScan({"com.dellmdq.config", "com.dellmdq.service", "com.dellmdq.listener"})//de este paquete leeran los jobs y steps
+@ComponentScan({"com.dellmdq.config", "com.dellmdq.service", "com.dellmdq.listener",
+	"com.dellmdq.reader", "com.dellmdq.processor", "com.dellmdq.writer",
+	"com.dellmdq.controller"})//de estos paquetes leeran los jobs y steps
+@EnableAsync
 public class SpringBatchApplication {
 
 	public static void main(String[] args) {
