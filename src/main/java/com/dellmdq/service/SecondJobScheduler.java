@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SecondJobScheduler {
+public class SecondJobScheduler {/**********EXCLUDED************/
 
 	@Autowired
 	private JobLauncher jobLauncher;
@@ -34,7 +34,7 @@ public class SecondJobScheduler {
 		JobParameters jobParameters = new JobParameters(params);
 
 		try {
-			JobExecution jobExecution = jobLauncher.run(secondJob, jobParameters);
+			JobExecution jobExecution = jobLauncher.r	un(secondJob, jobParameters);
 			System.out.println("Job Execution ID = " + jobExecution);
 		} catch (Exception e) {
 			System.out.println("Exception while starting job: " + e.getMessage());
